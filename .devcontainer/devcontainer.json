@@ -1,0 +1,56 @@
+{
+    "name": "python",
+    "image": "docker.io/library/python:slim",
+    "runArgs": [
+        // "--env-file=OAuth/.env",
+        // "--rm",
+        // "--network=host",
+        "--name=python"
+    ],
+    "privileged": false,
+    // "securityOpt": [
+    //     "seccomp=unconfined",
+    // ],
+    // "capAdd": [
+    //     "SYS_PTRACE",
+    // ],
+    // "mounts": [
+    //     {
+    //         "source": "${localWorkspaceFolder}",
+    //         "target": "/python",
+    //         "type": "bind"
+    //     },
+    // ],
+    "workspaceMount": "source=${localWorkspaceFolder},target=/python,type=bind,consistency=cached",
+    "workspaceFolder": "/python",
+    "remoteUser": "root",
+    "postStartCommand": "chown 755 ${containerWorkspaceFolder}/.devcontainer/container_setup.sh; ${containerWorkspaceFolder}/.devcontainer/container_setup.sh",
+    // "postStartCommand": "python -m venv ${containerWorkspaceFolder}/.venv",
+    "forwardPorts": [
+        5000
+    ],
+    "customizations": {
+        // Configure VSCode specific properties
+        "vscode": {
+            "extensions": [
+                "google.geminicodeassist",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "ms-python.black-formatter"
+            ],
+            "settings": {
+                "python.analysis.autoIndent": true,
+                "python.analysis.inlayHints.functionReturnTypes": true,
+                "python.analysis.languageServerMode": "light",
+                "python.analysis.supportDocstringTemplate": true,
+                "python.analysis.typeCheckingMode": "standard",
+                "python.defaultInterpreterPath": "/python/.venv/bin/python",
+                "python.experiments.enabled": false,
+                "python.languageServer": "Pylance",
+                "python.testing.autoTestDiscoverOnSaveEnabled": false
+            }
+        }
+    },
+    "shutdownAction": "stopContainer"
+}
