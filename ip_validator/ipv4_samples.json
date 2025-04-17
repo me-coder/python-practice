@@ -1,0 +1,25 @@
+{
+    "valid_data": {
+        "192.168.1.1": "",
+        "10.0.0.0": "",
+        "172.16.254.1": "",
+        "255.255.255.255": "",
+        "8.8.8.8": "",
+        "128.0.0.1": "",
+        "0.0.0.0": "",
+        "192.0.2.1": ""
+    },
+    "invalid_data": {
+        "256.256.256.256": "octet values out of range, max value is 255",
+        "192.168.01.01": "leading zeros in octet",
+        "999.999.999.999": "octet values out of range",
+        "10.10.10 (missing": "ne octet",
+        "10.10.10.10.10": "too many octets",
+        "192.168.1.-1": "negative octet value",
+        "abc.def.ghi.jkl": "non-numeric characters",
+        "300.400.500.600": "octet values out of range",
+        "10..10.10": "empty octet",
+        "172.300.0.1": "octet value out of range",
+        "google.com": "FQDN instead of IP"
+    }
+}

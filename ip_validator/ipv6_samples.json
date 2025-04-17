@@ -1,0 +1,17 @@
+{
+    "valid_data": {
+        "2001:0db8:85a3:0000:0000:8a2e:0370:7334": "",
+        "2001:db8:85a3::8a2e:370:7334": "with zero compression",
+        "::1": "loopback address",
+        "fe80::1": "link-local address",
+        "::ffff:192.0.2.128": "IPv4-mapped IPv6 address"
+    },
+    "invalid_data": {
+        "2001:0db8:85a3:0000:0000:8a2e:0370:7334:1234": "too many segments",
+        "2001:db8::85a3::8a2e:370:7334": "multiple ::",
+        "2001:dg8:85a3::8a2e:370:7334": "invalid characters - g",
+        "2001:0db8:85a3:0000:0000:8a2e:0370": "missing segments",
+        "::ffff:192.0.2.999": "invalid IPv4 address",
+        "google.com": "FQDN instead of IP"
+    }
+}
