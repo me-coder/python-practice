@@ -2,3 +2,5 @@ flask
 flask-jwt-extended
 python-dotenv
 requests
+fastapi[standard]
+python-jose[cryptography]

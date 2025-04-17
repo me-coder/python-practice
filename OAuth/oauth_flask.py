@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from flask import (
     Flask,
     make_response,
@@ -27,21 +28,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+jwt = JWTManager(app=app)
+
+# GitHub App credentials
+# Check if the variables exist before accesing them
+load_dotenv()
+if not (
+    os.environ.get("GITHUB_CLIENT_ID")
+    and os.environ.get("GITHUB_CLIENT_SECRET")
+    and os.environ.get("JWT_SECRET_KEY")
+):
+    raise Exception(
+        "You need to define GITHUB_CLIENT_ID"
+        ", GITHUB_CLIENT_SECRET & JWT_SECRET_KEY "
+        "as enviroment variables."
+    )
 
 app = Flask(import_name=__name__)
 # To generate a secret execute the following command:
 # `python -c 'import secrets; print(secrets.token_urlsafe(32))'`
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
-
 jwt = JWTManager(app=app)
-
-# GitHub App credentials
-# Check if the variables exist before accesing them
-if not os.environ.get("GITHUB_CLIENT_ID") or not os.environ.get("GITHUB_CLIENT_SECRET"):
-    raise Exception(
-        "You need to define GITHUB_CLIENT_ID"
-        " and GITHUB_CLIENT_SECRET as enviroment variables."
-    )
 
 GITHUB_URL = f"https://github.com/login/oauth/authorize?client_id={os.environ.get('GITHUB_CLIENT_ID')}&scope=user"
 GITHUB_API_URL = "https://api.github.com"
@@ -49,7 +56,7 @@ GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 
 
 @app.route(rule="/")
-@jwt_required(optional=True)
+@jwt_required(optional=True, locations=["cookies"])
 def index() -> str:
     """
     Handles the root route of the application.
@@ -65,7 +72,10 @@ def index() -> str:
     """
     current_user = get_jwt_identity()
     if current_user:
-        return f"Hello, {current_user} from index"
+        return f"""
+        Hello, <b>{current_user}</b> from index </br>
+        <a href='protected'>Go to protected info</a>
+        """
     else:
         return """
         <!DOCTYPE html>
@@ -153,7 +163,7 @@ def callback() -> Response:
         response.raise_for_status()
 
         try:
-            access_token = response.json()["access_token"]
+            access_token = response.json().get("access_token")
             if not access_token:
                 logger.critical("Access token not found in response text either.")
                 return make_response(
@@ -180,7 +190,7 @@ def callback() -> Response:
         user_response.raise_for_status()
         user_data = user_response.json()
 
-        jwt_access_token = create_access_token(identity=user_data["login"])
+        jwt_access_token = create_access_token(identity=user_data.get("login"))
         # return jsonify(jwt_access_token=jwt_access_token)
         response = make_response(redirect(location=url_for(endpoint="protected")))
         response.set_cookie(
@@ -189,6 +199,7 @@ def callback() -> Response:
             httponly=True,
             secure=not app.debug,
             samesite="Lax",
+            path='/'
         )
         return response
     except requests.exceptions.RequestException as e:

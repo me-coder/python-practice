@@ -24,7 +24,7 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/python,type=bind,consistency=cached",
     "workspaceFolder": "/python",
     "remoteUser": "root",
-    "postStartCommand": "chown 755 ${containerWorkspaceFolder}/.devcontainer/container_setup.sh; ${containerWorkspaceFolder}/.devcontainer/container_setup.sh",
+    "postStartCommand": "chmod 755 ${containerWorkspaceFolder}/.devcontainer/container_setup.sh && bash -c ${containerWorkspaceFolder}/.devcontainer/container_setup.sh",
     // "postStartCommand": "python -m venv ${containerWorkspaceFolder}/.venv",
     "forwardPorts": [
         5000
