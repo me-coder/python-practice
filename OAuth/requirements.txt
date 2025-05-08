@@ -4,3 +4,4 @@ python-dotenv
 requests
 fastapi[standard]
 python-jose[cryptography]
+uvi
