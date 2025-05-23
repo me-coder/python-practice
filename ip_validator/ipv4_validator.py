@@ -1,9 +1,7 @@
 import sys
 
-from concurrent.futures import ThreadPoolExecutor
-from threading import Lock
-
-from requests import requests
+# from concurrent.futures import ThreadPoolExecutor
+# from threading import Lock
 
 
 class IPv4Validator:
@@ -13,7 +11,7 @@ class IPv4Validator:
         """
         self.ipv4_addr = ip_to_validate
         self.is_valid_ipv4_ip = True
-        self.lock = Lock()
+        # self.lock = Lock()
         # print(f"IPv4 address {self.ipv4_addr=}")
 
     def validate_octet(self, octet):
@@ -26,11 +24,13 @@ class IPv4Validator:
         try:
             int_octet = int(octet, 10)
             if octet != str(int_octet) or 0 > int_octet or 255 < int_octet:
-                with self.lock:
-                    self.is_valid_ipv4_ip = False
-        except (TypeError, ValueError) as err:
-            with self.lock:
                 self.is_valid_ipv4_ip = False
+                # with self.lock:
+                #     self.is_valid_ipv4_ip = False
+        except (TypeError, ValueError) as err:
+            self.is_valid_ipv4_ip = False
+            # with self.lock:
+            #     self.is_valid_ipv4_ip = False
             # print(f"Error: {err}")
 
     def validate(self):
@@ -40,7 +40,7 @@ class IPv4Validator:
         Returns:
             True if the IP address is valid, False otherwise.
         """
-        # print(f"{self.ipv4_addr=}")
+
         if (
             not isinstance(self.ipv4_addr, str)
             or "." not in self.ipv4_addr
@@ -50,18 +50,18 @@ class IPv4Validator:
             # print(f"{self.is_valid_ipv4_ip=}")
             return self.is_valid_ipv4_ip
 
-        # for octet in self.ipv4_addr.split("."):
-        #     print(f"{octet=}")
-        #     self.validate_octet(octet)
+        for octet in self.ipv4_addr.split("."):
+            # print(f"{octet=}")
+            self.validate_octet(octet)
 
         # Use a ThreadPoolExecutor to validate each octet concurrently.
         # This can improve performance, especially for a large number of IPs.
         # max_workers=4 is used to limit the number of threads to 4,
         # which is a reasonable number for most systems.
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            # executor.map applies the validate_octet function
-            # to each octet in the IP address.
-            executor.map(self.validate_octet, self.ipv4_addr.split("."))
+        # with ThreadPoolExecutor(max_workers=4) as executor:
+        #     # executor.map applies the validate_octet function
+        #     # to each octet in the IP address.
+        #     executor.map(self.validate_octet, self.ipv4_addr.split("."))
 
         # print(
         #     f"IP address {self.ipv4_addr} validity as IPv4 address:"
@@ -81,7 +81,7 @@ def main(args):
         # print(f"{ip_to_validate=}")
         ipv4_validator = IPv4Validator(ip_to_validate)
         result = ipv4_validator.validate()
-        # print(f"IP address {ip_to_validate} validity as IPv4 address:" f"{result}")
+        print(f"IP address {ip_to_validate} validity as IPv4 address:" f"{result}")
 
 
 if __name__ == "__main__":
